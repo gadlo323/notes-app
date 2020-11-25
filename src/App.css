@@ -1,38 +1,223 @@
-.App {
-  text-align: center;
+@import url("https://fonts.googleapis.com/css2?family=Nerko+One&family=Oswald&family=Roboto+Mono&display=swap");
+#root {
+  max-width: 50%;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.formNote {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 1rem;
+  box-shadow: -4px 0px 22px 0px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: -4px 0px 22px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: -4px 0px 22px 0px rgba(0, 0, 0, 0.75);
+  margin-top: 3rem;
+  animation: FadeIn 2.5s ease;
+}
+li {
+  list-style: none;
+}
+
+#noteId {
+  font-size: 2.5rem;
+  font-weight: 600;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: none;
+  outline: none;
+}
+.head-line {
+  font-size: 4rem;
+  text-align: center;
+  padding: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5rem;
+  font-family: "Nerko One", cursive;
+}
+#noteId,
+.title_Note:focus {
+  border: 4px solid lightblue;
+}
+.addBtn {
+  padding: 0.5rem;
   color: white;
+  border-radius: 1rem;
+  background-color: #3294a1;
+  font-size: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: 1.5s;
+}
+.addBtn:hover {
+  background-color: #3ed9ed;
+}
+.fa-plus {
+  padding: 0 1rem;
+}
+.noteText,
+.model-form .note-Model {
+  min-height: 26vh;
+  resize: none;
+  overflow-y: hidden;
+}
+.AllNotes {
+  padding: 1rem 0;
+}
+.Note {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 2rem;
+  background-color: #fffcd1;
+  animation: FadeIn 1.2s ease-in-out;
+}
+.title_Note {
+  padding: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  border: none;
+  outline: none;
+  font-family: "Roboto Mono", monospace;
+}
+.nowDate {
+  font-size: 1.5rem;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  padding: 0 1rem;
+}
+.removeNote {
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+}
+.left-side {
+  display: flex;
+  flex-direction: column;
+}
+.left-side strong {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 700;
+}
+.left-side p {
+  font-size: 2.2rem;
+  word-break: break-all;
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+.model-close {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50rem;
+  min-height: 55vh;
+  background-color: #aba0f2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  text-align: center;
+  font-family: "Roboto Mono", monospace;
+  border-radius: 3rem;
+  outline: none;
 }
 
-.App-link {
-  color: #61dafb;
+.btn-Group {
+  display: flex;
+  padding: 2rem;
+}
+.btn {
+  padding: 1rem;
+  margin-left: 1rem;
+  border-radius: 1rem;
+  font-size: 1.6rem;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+.btn .fa {
+  padding: 0 1rem;
+}
+.update-btn {
+  background-color: #78eb8a;
+  transition: 1.5s;
+}
+.update-btn:hover {
+  background-color: #17b017;
+}
+.delete-btn {
+  background-color: #eb7d71;
+  transition: 1.5s;
+}
+.delete-btn:hover {
+  background-color: #f20505;
+}
+.fa-times-circle {
+  position: relative;
+  left: 23rem;
+  top: 1rem;
+  cursor: pointer;
+}
+.fa-times-circle:hover {
+  animation: CloseMove 2s linear infinite;
+}
+.model-form {
+  display: flex;
+  flex-direction: column;
+  font-family: "Roboto Mono", monospace;
+}
+.model-form .note-Model {
+  font-family: "Roboto Mono", monospace;
+  width: 40rem;
+  padding: 1rem;
+  border: none;
 }
 
-@keyframes App-logo-spin {
+@keyframes FadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.1);
+  }
+
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes CloseMove {
   from {
-    transform: rotate(0deg);
+    transform: rotate(0);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 800px) {
+  #root {
+    max-width: 90%;
+  }
+  .model-close {
+    max-width: 80%;
+    border-radius: 1.9rem;
+  }
+  .model-form .note-Model {
+    font-family: "Roboto Mono", monospace;
+    width: 28rem;
+    padding: 1rem;
+    border: none;
+    font-weight: 700;
+    font-size: 1.8rem;
+  }
+  .model-close p {
+    font-size: 1.7rem;
+  }
+  .fa-times-circle {
+    left: 13.7rem;
+    top: 0.1rem;
   }
 }
