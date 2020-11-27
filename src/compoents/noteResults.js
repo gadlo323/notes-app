@@ -10,10 +10,18 @@ const ResultsNote = (props) => {
         <p>{props.text}</p>
       </div>
       <div>
-        <span className="nowDate">{props.date}</span>
-        <button className="removeNote" onClick={() => props.handleOpenModal()}>
-          <i className="fa fa-trash fa-2x"></i>
-        </button>
+        <div>
+          <span className="nowDate">{props.date}</span>
+          <button
+            className="removeNote"
+            onClick={() => props.handleOpenModal()}
+          >
+            <i className="fa fa-trash fa-2x"></i>
+          </button>
+        </div>
+        <small className="update-tag">
+          {props.Updatedate ? "✎ Update in " + props.Updatedate : ""}
+        </small>
       </div>
     </li>
   );

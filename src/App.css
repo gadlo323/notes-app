@@ -154,6 +154,9 @@ li {
 .delete-btn:hover {
   background-color: #f20505;
 }
+.update-tag {
+  font-size: 1.7rem;
+}
 .fa-times-circle {
   position: relative;
   left: 23rem;

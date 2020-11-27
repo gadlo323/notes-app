@@ -1,13 +1,16 @@
 import React from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import Moment from "react-moment";
+import moment from "moment";
 import Modal from "react-modal";
 import "moment-timezone";
+import "../dataBase.js";
 import ResultsNote from "./noteResults";
 import "../App.css";
+import { AllData, removeItemdb, saveNote, updateDb } from "../dataBase.js";
 Modal.setAppElement("#root");
 class AddNote extends React.Component {
   constructor(props) {
+    let DateTime = moment().format("hh:mm:ss DD.MM.YYYY");
     super(props);
     this.state = {
       idDelete: 0,
@@ -17,7 +20,7 @@ class AddNote extends React.Component {
       Notes: [],
       noteVal: "",
       noteTitle: "",
-      date: <Moment format="hh:mm:ss DD.MM.YYYY"></Moment>,
+      date: DateTime,
       id: 0,
     };
   }
@@ -27,6 +30,19 @@ class AddNote extends React.Component {
     const objIndex = this.state.Notes.findIndex((item) => item.id === idDelete);
     const item = this.state.Notes[objIndex];
     this.setState({ modelTitle: item.noteTitle, modelText: item.noteVal });
+  }
+  async componentDidMount() {
+    let item = await AllData();
+    if (item.length > 0) {
+      setTimeout(() => {
+        this.setState(() => {
+          return {
+            Notes: item,
+            id: item[item.length - 1].id,
+          };
+        });
+      }, 100);
+    }
   }
 
   handleCloseModal() {
@@ -57,10 +73,11 @@ class AddNote extends React.Component {
     event.preventDefault();
     this.setState({ id: this.state.id + 1 });
     const item = {
-      id: this.state.id,
+      id: this.state.id + 1,
       noteTitle: this.state.noteTitle,
       noteVal: this.state.noteVal,
       date: this.state.date,
+      updateDate: "",
     };
     this.setState((state) => {
       return {
@@ -69,7 +86,9 @@ class AddNote extends React.Component {
         noteVal: "",
       };
     });
+    saveNote(item);
   }
+
   deleteNote() {
     const NewNotes = this.state.Notes.filter(
       (item) => item.id !== this.state.idDelete
@@ -77,21 +96,28 @@ class AddNote extends React.Component {
     this.setState((state) => {
       return { Notes: NewNotes };
     });
+    removeItemdb(this.state.idDelete);
   }
   updateNote() {
     if (this.state.modelTitle || this.state.modelText) {
       const id = this.state.idDelete;
       const objIndex = this.state.Notes.findIndex((item) => item.id === id);
       let Newnotes = [...this.state.Notes];
+      let item = {
+        noteTitle: this.state.modelTitle,
+        noteVal: this.state.modelText,
+        updateDate: this.state.date,
+      };
       Newnotes[objIndex] = {
         ...Newnotes[objIndex],
         noteTitle: this.state.modelTitle,
         noteVal: this.state.modelText,
-        date: <Moment format="hh:mm:ss DD.MM.YYYY"></Moment>,
+        updateDate: this.state.date,
       };
       this.setState((state) => {
         return { Notes: Newnotes };
       });
+      updateDb(id, item);
     }
   }
 
@@ -111,7 +137,7 @@ class AddNote extends React.Component {
             className="noteText"
             name="note"
             id="noteId"
-            placeholder="&#128221;Note message.."
+            placeholder="Note message&#128221;.."
             cols="50"
             value={this.state.noteVal}
             onChange={(e) => this.onChange(e)}
@@ -130,6 +156,7 @@ class AddNote extends React.Component {
               title={item.noteTitle}
               text={item.noteVal}
               date={item.date}
+              Updatedate={item.updateDate}
               handleOpenModal={() => this.handleOpenModal(item.id)}
             />
           ))}
