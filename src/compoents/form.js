@@ -4,9 +4,19 @@ import moment from "moment";
 import Modal from "react-modal";
 import "moment-timezone";
 import "../dataBase.js";
-import ResultsNote from "./noteResults";
+import { ResultsNote, Archivnotes } from "./noteResults.js";
 import "../App.css";
-import { AllData, removeItemdb, saveNote, updateDb } from "../dataBase.js";
+import {
+  AllData,
+  getArchiv,
+  GetOneItem,
+  Removefromarchiv,
+  removeItemArchiv,
+  removeItemdb,
+  saveNote,
+  updateDb,
+} from "../dataBase.js";
+
 Modal.setAppElement("#root");
 class AddNote extends React.Component {
   constructor(props) {
@@ -14,6 +24,7 @@ class AddNote extends React.Component {
     super(props);
     this.state = {
       idDelete: 0,
+      archivModal: false,
       showModal: false,
       modelTitle: "",
       modelText: "",
@@ -21,15 +32,28 @@ class AddNote extends React.Component {
       noteVal: "",
       noteTitle: "",
       date: DateTime,
+      archivNotes: [],
       id: 0,
     };
   }
-  handleOpenModal(id) {
-    this.setState({ showModal: true, idDelete: id });
-    let idDelete = id;
-    const objIndex = this.state.Notes.findIndex((item) => item.id === idDelete);
-    const item = this.state.Notes[objIndex];
-    this.setState({ modelTitle: item.noteTitle, modelText: item.noteVal });
+  async handleOpenModal(id) {
+    if (id) {
+      this.setState({ showModal: true, idDelete: id ? id : 0 });
+      let idDelete = id;
+      const objIndex = this.state.Notes.findIndex(
+        (item) => item.id === idDelete
+      );
+      const item = this.state.Notes[objIndex];
+      this.setState({ modelTitle: item.noteTitle, modelText: item.noteVal });
+    } else {
+      let data = await getArchiv();
+      this.setState(() => {
+        return {
+          archivNotes: data,
+          archivModal: true,
+        };
+      });
+    }
   }
   async componentDidMount() {
     let item = await AllData();
@@ -46,7 +70,7 @@ class AddNote extends React.Component {
   }
 
   handleCloseModal() {
-    this.setState({ showModal: false });
+    this.setState({ showModal: false, archivModal: false });
   }
 
   onChange(e) {
@@ -69,7 +93,6 @@ class AddNote extends React.Component {
     }
   }
   addNote(event) {
-    this.handleCloseModal();
     event.preventDefault();
     this.setState({ id: this.state.id + 1 });
     const item = {
@@ -93,7 +116,7 @@ class AddNote extends React.Component {
     const NewNotes = this.state.Notes.filter(
       (item) => item.id !== this.state.idDelete
     );
-    this.setState((state) => {
+    this.setState(() => {
       return { Notes: NewNotes };
     });
     removeItemdb(this.state.idDelete);
@@ -120,10 +143,44 @@ class AddNote extends React.Component {
       updateDb(id, item);
     }
   }
+  async recoverNote(id) {
+    let item = await GetOneItem(id);
+    this.setState((state) => {
+      return {
+        Notes: [...state.Notes, item],
+      };
+    });
+    Removefromarchiv(id);
+    const NewNotes = this.state.archivNotes.filter(
+      (item) => item.id !== parseInt(id.slice(0, 1))
+    );
+    this.setState(() => {
+      return { archivNotes: NewNotes };
+    });
+    saveNote(item);
+  }
+
+  delForgood(id, idArchiv) {
+    const NewNotes = this.state.archivNotes.filter((item) => item.id !== id);
+    this.setState(() => {
+      return { archivNotes: NewNotes };
+    });
+
+    removeItemArchiv(idArchiv);
+  }
 
   render() {
     return (
       <div>
+        <button
+          onClick={() => {
+            this.handleOpenModal();
+          }}
+          type="button"
+          className="archiv-note"
+        >
+          <i className="fa fa-folder-open"> Archiv</i>
+        </button>
         <form className="formNote" onSubmit={(event) => this.addNote(event)}>
           <input
             className="title_Note"
@@ -199,6 +256,30 @@ class AddNote extends React.Component {
               <i className="fa fa-pencil"></i>
               update
             </button>
+          </div>
+        </Modal>
+
+        {/* archiv model */}
+        <Modal className="archiv-model" isOpen={this.state.archivModal}>
+          <i
+            className="fa fa-times-circle fa-2x archiv-circel"
+            onClick={() => this.handleCloseModal()}
+          ></i>
+          <div className="top-model">
+            <i className="fa fa-folder-open fa-5x"></i>
+            <ul>
+              {this.state.archivNotes.map((item) => (
+                <Archivnotes
+                  key={item.id}
+                  title={item.noteTitle}
+                  date={item.date}
+                  recovery={() => this.recoverNote(item.id + item.noteTitle)}
+                  delForgood={() =>
+                    this.delForgood(item.id, item.id + item.noteTitle)
+                  }
+                />
+              ))}
+            </ul>
           </div>
         </Modal>
       </div>
